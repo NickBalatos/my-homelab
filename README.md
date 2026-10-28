@@ -3,9 +3,6 @@
 A hands-on lab where I learn network protocols, attacks and defenses by running
 them myself, built alongside my MSc in Cybersecurity at Aalborg University.
 
-Every lab follows the same cycle: **set it up → attack or generate traffic →
-observe it (Wireshark, logs, caches) → explain what happened → defend against it.**
-
 ## Lab environment
 
 Three VMs in VMware on an isolated subnet (`192.168.238.0/24`):
